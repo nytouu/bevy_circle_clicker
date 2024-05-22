@@ -1,0 +1,34 @@
+@document.meta
+title: README
+description: 
+authors: nytou
+categories: 
+created: 2024-05-22T14:50:38+0100
+updated: 2024-05-22T14:57:37+0100
+version: 1.1.1
+@end
+
+* osu! like circle clicking prototype
+  Trying to create osu in rust with bevy.
+
+  I'm tinkering with the {https://github.com/lucaspoffo/renet}[renet] crate in order to provide multiplayer capabilities
+
+* Usage
+  - Start the server :
+  @code sh
+  cargo run -- server
+  @end
+
+  - Start a new client :
+  @code sh
+  cargo run -- client 
+  @end
+
+  The server can accept 2 clients at most.
+
+* Goals
+  Make a very basic prototype where 2 players can play a circle clicking game.
+  I'm not sure how far this project will go.
+
+  I'm not trying to recreate osu! so I probably won't bother creating slider nor importing osu! maps
+
