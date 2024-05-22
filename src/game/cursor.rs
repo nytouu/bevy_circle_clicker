@@ -1,9 +1,11 @@
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
+use serde::{Deserialize, Serialize};
+
 use crate::utils::*;
 
-#[derive(Resource, Default)]
+#[derive(Debug, Default, Serialize, Deserialize, Component, Resource)]
 pub struct CursorPosition(pub Vec2);
 
 #[derive(Component, Default)]
@@ -32,7 +34,7 @@ pub fn update_cursor_coords(
     }
 }
 
-pub fn setup_cursor(
+pub fn spawn_cursor(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     mut q_window: Query<&mut Window, With<PrimaryWindow>>,
@@ -64,7 +66,12 @@ pub fn spawn_trail(
     cursor_pos: Res<CursorPosition>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
+    cursor: Query<&Cursor>,
 ) {
+    if cursor.is_empty() {
+        return;
+    }
+
     timer.0.tick(time.delta());
 
     if timer.0.just_finished() {

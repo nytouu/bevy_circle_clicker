@@ -1,0 +1,15 @@
+@document.meta
+title: TODO
+description: 
+authors: nytou
+categories: 
+created: 2024-05-22T14:45:29+0100
+updated: 2024-05-22T14:50:08+0100
+version: 1.1.1
+@end
+
+* TODO List
+  - ( )  Avoir les cercles spawn depuis le serv
+  - ( ) Les sync depuis les clients
+
+  - ( ) Handle click

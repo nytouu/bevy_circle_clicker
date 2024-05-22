@@ -1,3 +1,4 @@
+use bevy::window::PrimaryWindow;
 use bevy::{window::WindowMode, winit::WinitWindows};
 use bevy::prelude::*;
 
@@ -34,7 +35,7 @@ impl Plugin for ConfigPlugin {
         ))
         .insert_resource(Msaa::Off)
         .insert_resource(ClearColor(Color::rgb(0.0, 0.0, 0.0)))
-        .add_systems(Startup, (set_window_icon, set_framerate_limit));
+        .add_systems(Startup, (set_window_icon, set_framerate_limit, hide_cursor));
     }
 }
 
@@ -56,4 +57,11 @@ fn set_window_icon(windows: NonSend<WinitWindows>) {
     for window in windows.windows.values() {
         window.set_window_icon(Some(icon.clone()));
     }
+}
+
+pub fn hide_cursor(
+    mut q_window: Query<&mut Window, With<PrimaryWindow>>,
+) {
+    let mut primary_window = q_window.single_mut();
+    primary_window.cursor.visible = false;
 }
