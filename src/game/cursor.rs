@@ -63,28 +63,31 @@ pub fn move_cursor(input: Res<CursorPosition>, mut query: Query<&mut Transform, 
 pub fn spawn_trail(
     mut timer: ResMut<CursorTrailTimer>,
     time: Res<Time>,
-    query: Query<&Transform, With<Cursor>>,
+    cursor_pos: Res<CursorPosition>,
     mut commands: Commands,
     asset_server: Res<AssetServer>,
+    cursor: Query<&Cursor>,
 ) {
-    timer.0.tick(time.delta());
-
-    for transform in &query {
-        if timer.0.just_finished() {
-            commands.spawn((
-                CursorTrail,
-                SpriteBundle {
-                    texture: asset_server.load("cursortrail.png"),
-                    transform: Transform {
-                        translation: Vec3::new(transform.translation.x, transform.translation.y, TRAIL_Z),
-                        ..Default::default()
-                    },
-                    ..Default::default()
-                },
-            ));
-        }
+    if cursor.is_empty() {
+        return;
     }
 
+    timer.0.tick(time.delta());
+
+    if timer.0.just_finished() {
+        // FIXME: there's probably a better way to do this
+        commands.spawn((
+            CursorTrail,
+            SpriteBundle {
+                texture: asset_server.load("cursortrail.png"),
+                transform: Transform {
+                    translation: Vec3::new(cursor_pos.0.x, cursor_pos.0.y, TRAIL_Z),
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
+        ));
+    }
 }
 
 pub fn remove_trail(

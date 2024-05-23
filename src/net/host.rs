@@ -13,10 +13,9 @@ use renet::{transport::NetcodeServerTransport, ClientId};
 use std::time::SystemTime;
 use std::{collections::HashMap, net::UdpSocket};
 
-use crate::game::cursor::{Cursor, CursorPosition};
-use crate::game::hitcircle::*;
-use crate::net::*;
-use crate::utils::*;
+use crate::{
+    game::cursor::{Cursor, CursorPosition}, net::*, utils::CURSOR_Z
+};
 
 pub struct NetHostPlugin;
 
@@ -28,7 +27,7 @@ impl Plugin for NetHostPlugin {
 
         app.add_systems(
             Update,
-            (server_update, server_sync_players, move_cursors, spawn_hitcircle).run_if(resource_exists::<RenetServer>),
+            (server_update, server_sync_players, move_cursors).run_if(resource_exists::<RenetServer>),
         );
     }
 }
