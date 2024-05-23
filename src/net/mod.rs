@@ -26,7 +26,7 @@ pub struct Lobby {
 pub enum ServerMessages {
     PlayerConnected { id: ClientId },
     PlayerDisconnected { id: ClientId },
-    SpawnCircle { position: Vec2 },
+    Click { position: Vec2 },
 }
 
 // If any error is found we just panic
