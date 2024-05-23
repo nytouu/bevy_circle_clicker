@@ -10,7 +10,7 @@ use renet::{transport::NetcodeClientTransport, ClientId};
 use std::time::SystemTime;
 use std::{collections::HashMap, net::UdpSocket};
 
-use crate::game::cursor::{Cursor, CursorPosition};
+use crate::game::cursor::*;
 use crate::net::*;
 use crate::utils::*;
 
@@ -27,6 +27,7 @@ impl Plugin for NetClientPlugin {
             Update,
             (player_input, client_send_input, client_sync_players).run_if(client_connected),
         );
+        app.add_systems(FixedUpdate, (spawn_trail, remove_trail).run_if(client_connected));
     }
 }
 

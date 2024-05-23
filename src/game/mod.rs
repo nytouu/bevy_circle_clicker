@@ -2,8 +2,8 @@ use bevy::prelude::*;
 
 mod camera;
 mod click;
-mod hitcircle;
 mod config;
+pub mod hitcircle;
 pub mod cursor;
 
 use cursor::*;
@@ -35,7 +35,7 @@ impl Plugin for GamePlugin {
                 Update,
                 (
                     // cursor::update_cursor_coords,
-                    hitcircle::spawn_hitcircle,
+                    // hitcircle::spawn_hitcircle,
                     // cursor::move_cursor,
                     hitcircle::color_hitcircle,
                     // click::detect_click,
