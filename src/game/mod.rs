@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 mod camera;
 mod click;
-mod config;
+pub mod config;
 pub mod hitcircle;
 pub mod cursor;
 

@@ -10,7 +10,9 @@ use renet::{transport::NetcodeClientTransport, ClientId};
 use std::time::SystemTime;
 use std::{collections::HashMap, net::UdpSocket};
 
-use crate::game::cursor::*;
+use crate::game::{
+    config::CircleConfig, cursor::*, hitcircle::{ApproachCircle, HitCircle, HitCircleOverlay}
+};
 use crate::net::*;
 use crate::utils::*;
 
@@ -27,7 +29,10 @@ impl Plugin for NetClientPlugin {
             Update,
             (player_input, client_send_input, client_sync_players).run_if(client_connected),
         );
-        app.add_systems(FixedUpdate, (spawn_trail, remove_trail).run_if(client_connected));
+        app.add_systems(
+            FixedUpdate,
+            (spawn_trail, remove_trail).run_if(client_connected),
+        );
     }
 }
 
@@ -56,6 +61,7 @@ fn client_sync_players(
     mut client: ResMut<RenetClient>,
     mut lobby: ResMut<Lobby>,
     asset_server: Res<AssetServer>,
+    config: Res<CircleConfig>
 ) {
     while let Some(message) = client.receive_message(DefaultChannel::ReliableOrdered) {
         let server_message = bincode::deserialize(&message).unwrap();
@@ -74,13 +80,64 @@ fn client_sync_players(
 
                 lobby.players.insert(id, player_entity);
             }
+
             ServerMessages::PlayerDisconnected { id } => {
                 println!("Player {} disconnected.", id);
                 if let Some(player_entity) = lobby.players.remove(&id) {
                     commands.entity(player_entity).despawn();
                 }
             }
-            ServerMessages::Click { position } => todo!(),
+
+            ServerMessages::SpawnCircle { position } => {
+                commands
+                    .spawn((
+                        SpriteBundle {
+                            transform: Transform {
+                                translation: Vec3::new(position.x, position.y, 0.0),
+                                scale: Vec3::new(
+                                    config.circle_size,
+                                    config.circle_size,
+                                    config.circle_size,
+                                ),
+                                ..Default::default()
+                            },
+                            texture: asset_server.load("hitcircle@2x.png"),
+                            ..Default::default()
+                        },
+                        HitCircle::default(),
+                    ))
+                    .with_children(|parent| {
+                        parent.spawn((
+                            SpriteBundle {
+                                texture: asset_server.load("hitcircleoverlay@2x.png"),
+                                transform: Transform {
+                                    translation: Vec3::new(0.0, 0.0, OVERLAY_Z),
+                                    ..Default::default()
+                                },
+                                ..Default::default()
+                            },
+                            HitCircleOverlay,
+                        ));
+                    })
+                    .with_children(|parent| {
+                        parent.spawn((
+                            SpriteBundle {
+                                texture: asset_server.load("approachcircle@2x.png"),
+                                transform: Transform {
+                                    translation: Vec3::new(0.0, 0.0, OVERLAY_Z),
+                                    scale: Vec3::new(
+                                        config.circle_size * MAX_APPROACH_SIZE,
+                                        config.circle_size * MAX_APPROACH_SIZE,
+                                        config.circle_size * MAX_APPROACH_SIZE,
+                                    ),
+                                    ..Default::default()
+                                },
+                                ..Default::default()
+                            },
+                            ApproachCircle,
+                        ));
+                    });
+            }
         }
     }
 
