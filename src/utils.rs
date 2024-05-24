@@ -26,3 +26,7 @@ pub const MAX_APPROACH_SIZE: f32 = 8.0;
 
 /// Minimum approach circle size at which it should despawn.
 pub const MIN_APPROACH_SIZE: f32 = 0.9;
+
+pub const HIT_SCORE: u64 = 300;
+
+pub const SCORE_TEXT_SIZE: f32 = 60.0;

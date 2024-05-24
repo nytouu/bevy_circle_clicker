@@ -6,13 +6,13 @@ use crate::game::config::CircleConfig;
 use crate::utils::*;
 
 /// Marker to identify HitCirlce sprites which should be coloured.
-/// This component contains data to know when to despawn itself and detect the player's click
-/// precision.
+/// Holds data to know its correct timing and lifetime.
 #[derive(Component, Default)]
 pub struct HitCircle {
+    /// Correct click timing of the circle
     pub time: f32,
-    pub clicked_time: Option<f32>,
-    pub missed: bool,
+    /// Used to despawn the hitcircle if it is not clicked.
+    pub lifetime: f32,
 }
 
 /// Marker to identify HitCircleOverlay sprites
@@ -48,7 +48,7 @@ pub fn spawn_hitcircle(
                         ),
                         ..Default::default()
                     },
-                    texture: asset_server.load("hitcircle@2x.png"),
+                    texture: asset_server.load("imgs/gameplay/hitcircle@2x.png"),
                     ..Default::default()
                 },
                 HitCircle::default(),
@@ -56,7 +56,7 @@ pub fn spawn_hitcircle(
             .with_children(|parent| {
                 parent.spawn((
                     SpriteBundle {
-                        texture: asset_server.load("hitcircleoverlay@2x.png"),
+                        texture: asset_server.load("imgs/gameplay/hitcircleoverlay@2x.png"),
                         transform: Transform {
                             translation: Vec3::new(0.0, 0.0, OVERLAY_Z),
                             ..Default::default()
@@ -69,7 +69,7 @@ pub fn spawn_hitcircle(
             .with_children(|parent| {
                 parent.spawn((
                     SpriteBundle {
-                        texture: asset_server.load("approachcircle@2x.png"),
+                        texture: asset_server.load("imgs/gameplay/approachcircle@2x.png"),
                         transform: Transform {
                             translation: Vec3::new(0.0, 0.0, OVERLAY_Z),
                             scale: Vec3::new(
@@ -112,5 +112,14 @@ pub fn shrink_approach_circle(
         if transform.scale.x <= MIN_APPROACH_SIZE {
             commands.entity(entity).despawn();
         }
+    }
+}
+
+pub fn update_hitcircle(
+    mut query: Query<&mut HitCircle>,
+    time: Res<Time>
+) {
+    for mut hitcircle in &mut query {
+        hitcircle.lifetime += time.delta_seconds();
     }
 }

@@ -42,7 +42,7 @@ pub fn setup_cursor(
     commands.spawn((
         Cursor,
         SpriteBundle {
-            texture: asset_server.load("cursor.png"),
+            texture: asset_server.load("imgs/cursor/cursor.png"),
             ..Default::default()
         },
     ));
@@ -72,7 +72,7 @@ pub fn spawn_trail(
         commands.spawn((
             CursorTrail,
             SpriteBundle {
-                texture: asset_server.load("cursortrail.png"),
+                texture: asset_server.load("imgs/cursor/cursortrail.png"),
                 transform: Transform {
                     translation: Vec3::new(cursor_pos.0.x, cursor_pos.0.y, TRAIL_Z),
                     ..Default::default()

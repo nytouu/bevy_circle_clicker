@@ -44,7 +44,7 @@ fn set_framerate_limit(mut framespace_settings: ResMut<FramepaceSettings>) {
 
 fn set_window_icon(windows: NonSend<WinitWindows>) {
     let (icon_rgba, icon_width, icon_height) = {
-        let image = image::open("./assets/icon.png")
+        let image = image::open("./assets/imgs/icon.png")
             .expect("Failed to open icon path")
             .into_rgba8();
         let (width, height) = image.dimensions();
