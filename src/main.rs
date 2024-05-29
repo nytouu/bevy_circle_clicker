@@ -3,7 +3,7 @@ use bevy::prelude::*;
 mod config;
 use config::ConfigPlugin;
 
-mod editor;
+// mod editor;
 // use editor::PlsEditorPlugin;
 
 mod game;

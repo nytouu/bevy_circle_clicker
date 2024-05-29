@@ -9,17 +9,31 @@ use crate::utils::*;
 /// Holds data to know its correct timing and lifetime.
 #[derive(Component, Default)]
 pub struct HitCircle {
-    /// Correct click timing of the circle
-    pub time: f32,
+    /// Correct click timing of the circle.
+    pub clicktime: f32,
     /// Used to despawn the hitcircle if it is not clicked.
     pub lifetime: f32,
 }
 
-/// Marker to identify HitCircleOverlay sprites
+/// Enum that represents the accuracy of a click.
+#[allow(dead_code)]
+#[derive(Component)]
+pub enum Hit {
+    /// Equivalent to 300 in osu!
+    Good,
+    /// Equivalent to 100 in osu!
+    Mid,
+    /// Equivalent to 50 in osu!
+    Bad,
+    /// Missed note
+    Miss,
+}
+
+/// Marker to identify HitCircleOverlay sprites.
 #[derive(Component)]
 pub struct HitCircleOverlay;
 
-/// Marker to identify ApproachCircle sprites
+/// Marker to identify ApproachCircle sprites.
 #[derive(Component)]
 pub struct ApproachCircle;
 
@@ -28,17 +42,21 @@ pub fn spawn_hitcircle(
     asset_server: Res<AssetServer>,
     config: Res<CircleConfig>,
     query: Query<&HitCircle>,
+    time: Res<Time>,
 ) {
     if query.is_empty() {
         let mut rng = rand::thread_rng();
+
+        let clicktime = time.elapsed_seconds() + 150.0 * config.approach_rate;
+        info!("circle should be click at :{}", clicktime);
 
         commands
             .spawn((
                 SpriteBundle {
                     transform: Transform {
                         translation: Vec3::new(
-                            rng.gen_range(-500.0..500.0),
-                            rng.gen_range(-500.0..500.0),
+                            rng.gen_range(-200.0..200.0),
+                            rng.gen_range(-300.0..300.0),
                             0.0,
                         ),
                         scale: Vec3::new(
@@ -51,7 +69,10 @@ pub fn spawn_hitcircle(
                     texture: asset_server.load("imgs/gameplay/hitcircle@2x.png"),
                     ..Default::default()
                 },
-                HitCircle::default(),
+                HitCircle {
+                    clicktime,
+                    ..Default::default()
+                },
             ))
             .with_children(|parent| {
                 parent.spawn((
@@ -115,11 +136,24 @@ pub fn shrink_approach_circle(
     }
 }
 
-pub fn update_hitcircle(
-    mut query: Query<&mut HitCircle>,
-    time: Res<Time>
+pub fn check_hitcircle_life(
+    mut query: Query<(Entity, &mut HitCircle, &Transform)>,
+    config: Res<CircleConfig>,
+    time: Res<Time>,
+    mut commands: Commands,
 ) {
-    for mut hitcircle in &mut query {
+    for (entity, mut hitcircle, transform) in &mut query {
         hitcircle.lifetime += time.delta_seconds();
+        if hitcircle.lifetime >= hitcircle.clicktime + config.overall_difficulty / 2.0 {
+            commands.entity(entity).despawn_recursive();
+
+            commands.spawn((
+                Hit::Miss,
+                Transform {
+                    translation: transform.translation,
+                    ..Default::default()
+                },
+            ));
+        }
     }
 }

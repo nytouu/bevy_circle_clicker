@@ -21,8 +21,8 @@ impl Default for CircleConfig {
     fn default() -> Self {
         CircleConfig {
             circle_size: 0.5,
-            approach_rate: 0.023,
-            overall_difficulty: 50.0,
+            approach_rate: 0.01,
+            overall_difficulty: 0.02,
             health: 10.0,
         }
     }

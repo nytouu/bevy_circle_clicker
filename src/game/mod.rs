@@ -23,6 +23,7 @@ impl Plugin for GamePlugin {
             .init_resource::<CircleConfig>()
             .init_resource::<Score>()
             .add_event::<ScoreUpdate>()
+            .insert_resource(Time::<Fixed>::from_hz(REFRESH_RATE))
             .insert_resource(CursorTrailTimer(Timer::from_seconds(
                 TRAIL_FREQUENCY,
                 TimerMode::Repeating,
@@ -34,15 +35,27 @@ impl Plugin for GamePlugin {
             .add_systems(
                 Update,
                 (
+                    cursor::move_cursor,
                     cursor::update_cursor_coords,
                     hitcircle::spawn_hitcircle,
-                    cursor::move_cursor,
+                    hitcircle::check_hitcircle_life,
+                ),
+            )
+            .add_systems(PostUpdate, (
+                click::detect_click,
+            ))
+            .add_systems(
+                FixedUpdate,
+                (
                     hitcircle::color_hitcircle,
-                    click::detect_click,
                     hitcircle::shrink_approach_circle,
                     score::update_score,
-                ).chain(),
-            )
-            .add_systems(FixedUpdate, (cursor::spawn_trail, cursor::remove_trail));
+                    cursor::spawn_trail,
+                    cursor::remove_trail,
+                    click::spawn_hit,
+                    click::remove_hit
+                )
+                    .chain(),
+            );
     }
 }
